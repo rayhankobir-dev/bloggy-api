@@ -12,8 +12,10 @@ import {
   Post,
   Put,
   Query,
+  UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
+import { AuthUserId } from '../auth/decorator/auth-user-id.decorator';
 
 @ApiTags('Blog')
 @Controller('blogs')
@@ -24,9 +26,14 @@ export class BlogController {
   @ApiBody({ type: CreateBlogDto })
   @ApiResponse({ status: 201, type: SuccessResponseDto })
   @ApiConsumes('multipart/form-data')
-  @UseInterceptors(FilesInterceptor('blogImages'))
-  create(@Body() createBlogDto: CreateBlogDto): Promise<SuccessResponseDto> {
-    return this.blogService.createBlog(createBlogDto);
+  @UseInterceptors(FilesInterceptor('thumbnail'))
+  create(
+    @AuthUserId() { userId }: ITokenPayload,
+    @UploadedFiles() thumbnail: Express.Multer.File,
+    @Body() createBlogDto: CreateBlogDto,
+  ): Promise<SuccessResponseDto> {
+    createBlogDto.thumbnail = thumbnail;
+    return this.blogService.createBlog(createBlogDto, userId);
   }
 
   @Get()

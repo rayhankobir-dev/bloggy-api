@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
@@ -28,32 +29,33 @@ export class CreateBlogDto {
   title: string;
 
   @ApiProperty({
-    description: 'Category ID for the blog',
+    description: 'Category id for the blog',
     example: '63f1c5f1e4231b5a6a7b12f3',
-    required: false,
+    required: true,
   })
   @IsNotEmpty()
-  @IsMongoId({ message: 'Category ID must be a valid MongoDB ObjectId' })
-  category?: string;
+  @IsMongoId({ message: 'Invalid category' })
+  category: string;
 
   @ApiProperty({
     description: 'Tags associated with the blog',
     required: false,
   })
   @IsOptional()
-  @IsArray({ message: 'Tags must be an array of IDs' })
+  @IsArray({ message: 'Tags must be an array' })
   @IsMongoId({
     each: true,
-    message: 'Each tag must be a valid MongoDB ObjectId',
+    message: 'Invalid tag',
   })
+  @Transform(({ value }) => (Array.isArray(value) ? value : value?.split(',')))
   tags?: string[];
 
   @ApiProperty({
-    description: 'Thumbnail URL for the blog',
+    description: 'Thumbnail of the blog',
+    required: true,
+    type: 'file',
   })
-  @IsNotEmpty({ message: 'Thumbnail is required' })
-  @IsString({ message: 'Thumbnail must be a string' })
-  thumbnail: string;
+  thumbnail: Express.Multer.File;
 
   @ApiProperty({
     description: 'Content of the blog',
@@ -63,31 +65,11 @@ export class CreateBlogDto {
   content: string;
 
   @ApiProperty({
-    description: 'Author ID of the blog',
-    required: true,
-  })
-  @IsNotEmpty()
-  @IsMongoId({ message: 'Author ID must be a valid MongoDB ObjectId' })
-  author: string;
-
-  @ApiProperty({
     description: 'Publication status of the blog',
     example: true,
     required: false,
   })
   @IsOptional()
-  @IsBoolean({ message: 'isPublished must be a boolean value' })
+  @IsBoolean({ message: 'Status must be a boolean for isPublished' })
   isPublished?: boolean;
-
-  @ApiProperty({
-    description: 'Comments associated with the blog',
-    required: false,
-  })
-  @IsOptional()
-  @IsArray({ message: 'Comments must be an array of IDs' })
-  @IsMongoId({
-    each: true,
-    message: 'Each comment must be a valid MongoDB ObjectId',
-  })
-  comments?: string[];
 }

@@ -8,6 +8,7 @@ import { BlogModule } from './modules/blog/blog.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { TagModule } from './modules/tag/tag.module';
 import { Module } from '@nestjs/common';
+import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { Module } from '@nestjs/common';
     CommentModule,
     AuthModule,
     EncryptionModule,
+    CloudinaryModule,
   ],
   providers: [ValidationProvider],
 })

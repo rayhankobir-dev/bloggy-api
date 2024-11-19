@@ -7,15 +7,31 @@ import {
   Injectable,
   Logger,
 } from '@nestjs/common';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Injectable()
 export class BlogService {
   private readonly logger: Logger = new Logger(BlogService.name);
-  constructor(private readonly blogRepository: BlogRepository) {}
+  constructor(
+    private readonly blogRepository: BlogRepository,
+    private readonly cloudinaryService: CloudinaryService,
+  ) {}
 
-  async createBlog(blogDto: CreateBlogDto): Promise<SuccessResponseDto> {
+  async createBlog(
+    blogDto: CreateBlogDto,
+    author: string,
+  ): Promise<SuccessResponseDto> {
     try {
-      const blog = await this.blogRepository.create(blogDto);
+      const thumbnail = await this.cloudinaryService.uploadSingleImage(
+        blogDto.thumbnail,
+      );
+
+      const blog = await this.blogRepository.create({
+        ...blogDto,
+        thumbnail,
+        author,
+      });
+
       return new SuccessResponseDto('Blog created successfully', blog);
     } catch (error) {
       this.logger.error(`Error creating blog:`, error);

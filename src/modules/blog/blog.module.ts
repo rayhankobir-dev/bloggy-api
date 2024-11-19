@@ -1,3 +1,4 @@
+import { CloudinaryModule } from '../cloudinary/cloudinary.module';
 import { CategoryModule } from '../category/category.module';
 import { CommentModule } from '../comment/comment.module';
 import { Blog, BlogSchema } from './entities/blog.entity';
@@ -12,6 +13,7 @@ import { Module } from '@nestjs/common';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
+    CloudinaryModule,
     UserModule,
     CategoryModule,
     TagModule,
