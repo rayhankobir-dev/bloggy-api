@@ -1,6 +1,6 @@
+import { ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthUserId } from '../auth/decorator/auth-user-id.decorator';
 import { RequiredRoles } from '../user/decorator/roles.decorator';
-import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SuccessResponseDto } from '../common/dto/response.dto';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { IsPublic } from '../auth/guard/authentication.guard';
@@ -16,7 +16,9 @@ import {
   Param,
   Patch,
   Post,
+  UploadedFiles,
 } from '@nestjs/common';
+import slugify from 'slugify';
 
 @ApiTags('Category')
 @Controller('categories')
@@ -26,11 +28,16 @@ export class CategoryController {
   @Post()
   @ApiBody({ type: CreateCategoryDto })
   @ApiResponse({ status: 201, type: SuccessResponseDto })
-  @RequiredRoles([UserRoleEnum.ADMIN])
+  @ApiConsumes('multipart/form-data')
+  // @RequiredRoles([UserRoleEnum.ADMIN])
   async create(
     @Body() categoryDto: CreateCategoryDto,
+    @UploadedFiles() thumbnail: Express.Multer.File,
     @AuthUserId() { userId }: ITokenPayload,
   ): Promise<SuccessResponseDto> {
+    categoryDto.thumbnail = thumbnail;
+    categoryDto.slug = slugify(categoryDto.name);
+
     return await this.categoryService.createCategory(categoryDto, userId);
   }
 

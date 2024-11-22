@@ -7,18 +7,26 @@ import {
   Injectable,
   Logger,
 } from '@nestjs/common';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Injectable()
 export class CategoryService {
   private readonly logger: Logger = new Logger(CategoryService.name);
-  constructor(private readonly categoryRepository: CategoryRepository) {}
+  constructor(
+    private readonly categoryRepository: CategoryRepository,
+    private readonly cloudinaryService: CloudinaryService,
+  ) {}
 
   async createCategory(
     categoryDto: CreateCategoryDto,
     createdBy: string,
   ): Promise<SuccessResponseDto> {
+    const thumbnail = await this.cloudinaryService.uploadSingleImage(
+      categoryDto.thumbnail,
+    );
     const category = await this.categoryRepository.create({
       ...categoryDto,
+      thumbnail,
       createdBy,
     });
     return new SuccessResponseDto('Category created successfully', category);

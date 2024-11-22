@@ -12,6 +12,12 @@ export class Category {
   @Prop({ type: String, required: true, unique: true })
   name: string;
 
+  @Prop({ type: String, required: true, unique: true })
+  slug: string;
+
+  @Prop({ type: String, required: true })
+  thumbnail: string;
+
   @Prop({ type: Types.ObjectId, ref: User.name, default: null })
   createdBy: string;
 }

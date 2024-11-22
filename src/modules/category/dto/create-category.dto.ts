@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, Length } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateCategoryDto {
@@ -8,8 +8,20 @@ export class CreateCategoryDto {
   })
   @IsNotEmpty({ message: 'Category name is required' })
   @IsString({ message: 'Category name must be a string' })
-  @Length(3, 50, {
-    message: 'Category name must be between 3 and 50 characters',
-  })
   name: string;
+
+  @ApiProperty({
+    description: 'Slug of the category',
+    example: 'technology',
+  })
+  @IsString({ message: 'Slug must be a string' })
+  @IsOptional()
+  slug?: string;
+
+  @ApiProperty({
+    description: 'Thumbnail of the blog',
+    required: true,
+    type: 'file',
+  })
+  thumbnail: Express.Multer.File;
 }
