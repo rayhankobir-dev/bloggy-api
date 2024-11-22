@@ -1,4 +1,7 @@
+import { PaginatedResponseDto } from '../common/dto/paginate-response.dto';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { SuccessResponseDto } from '../common/dto/response.dto';
+import { ListBlogQuery } from './dto/list-blog-query.dto';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { BlogRepository } from './blog.repository';
 import {
@@ -7,7 +10,6 @@ import {
   Injectable,
   Logger,
 } from '@nestjs/common';
-import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Injectable()
 export class BlogService {
@@ -42,10 +44,30 @@ export class BlogService {
     }
   }
 
-  async findBlogs(): Promise<SuccessResponseDto> {
+  async findBlogs({
+    page = 1,
+    limit = 10,
+    category,
+    title,
+  }: ListBlogQuery): Promise<PaginatedResponseDto> {
     try {
-      const blogs = await this.blogRepository.getAll();
-      return new SuccessResponseDto('Blogs fetched successfully', blogs);
+      const searchQuery: Record<string, any> = {};
+      if (category) {
+        searchQuery['category'] = category;
+      }
+      if (title) {
+        searchQuery['title'] = { $regex: title, $options: 'i' };
+      }
+
+      const totalRecords = await this.blogRepository.count(searchQuery);
+      const skip = (page - 1) * limit;
+
+      const blogs = await this.blogRepository.getAll(searchQuery, {
+        limit,
+        skip,
+      });
+
+      return new PaginatedResponseDto(totalRecords, page, limit, blogs);
     } catch (error) {
       if (error instanceof HttpException) throw error;
 

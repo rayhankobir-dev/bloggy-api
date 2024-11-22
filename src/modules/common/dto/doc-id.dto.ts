@@ -5,7 +5,7 @@ export class DocIdQueryDto {
   @ApiProperty({
     description: 'Document model id',
   })
-  @IsMongoId()
+  @IsMongoId({ message: 'Invalid document id' })
   @IsNotEmpty()
   readonly id: string;
 }

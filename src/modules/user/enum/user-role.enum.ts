@@ -4,6 +4,6 @@ export enum UserRoleEnum {
 }
 
 export enum UserRoleDtoEnum {
-  ADMIN = UserRoleEnum.AUTHOR,
+  ADMIN = UserRoleEnum.ADMIN,
   AUTHOR = UserRoleEnum.AUTHOR,
 }

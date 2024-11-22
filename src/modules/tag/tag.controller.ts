@@ -1,4 +1,3 @@
-import { Body, Controller, Delete, Get, Patch, Post } from '@nestjs/common';
 import { AuthUserId } from '../auth/decorator/auth-user-id.decorator';
 import { ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RequiredRoles } from '../user/decorator/roles.decorator';
@@ -7,6 +6,15 @@ import { IsPublic } from '../auth/guard/authentication.guard';
 import { UserRoleEnum } from '../user/enum/user-role.enum';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { TagService } from './tag.service';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 
 @ApiTags('Tag')
 @Controller('tags')
@@ -41,7 +49,7 @@ export class TagController {
   @Delete(':id')
   @ApiResponse({ status: 200, type: SuccessResponseDto })
   @RequiredRoles([UserRoleEnum.ADMIN])
-  remove(@Body() tagId: string): Promise<SuccessResponseDto> {
+  remove(@Param() tagId: string): Promise<SuccessResponseDto> {
     return this.tagService.deleteTag(tagId);
   }
 }

@@ -1,21 +1,26 @@
 import { ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { AuthUserId } from '../auth/decorator/auth-user-id.decorator';
 import { SuccessResponseDto } from '../common/dto/response.dto';
 import { IsPublic } from '../auth/guard/authentication.guard';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { SlugBlogQueryDto } from './dto/slug-blog-query.dto';
 import { CreateBlogDto } from './dto/create-blog.dto';
+import { DeleteBlogDto } from './dto/delete-blog.dto';
 import { BlogService } from './blog.service';
 import {
   Body,
   Controller,
   Delete,
   Get,
+  Param,
   Post,
   Put,
   Query,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { AuthUserId } from '../auth/decorator/auth-user-id.decorator';
+import { PaginatedResponseDto } from '../common/dto/paginate-response.dto';
+import { ListBlogQuery } from './dto/list-blog-query.dto';
 
 @ApiTags('Blog')
 @Controller('blogs')
@@ -38,16 +43,16 @@ export class BlogController {
 
   @Get()
   @IsPublic()
-  @ApiResponse({ status: 200, type: SuccessResponseDto })
-  findAll(): Promise<SuccessResponseDto> {
-    return this.blogService.findBlogs();
+  @ApiResponse({ status: 200, type: PaginatedResponseDto })
+  findAll(@Query() query: ListBlogQuery): Promise<PaginatedResponseDto> {
+    return this.blogService.findBlogs(query);
   }
 
   @Get(':slug')
   @IsPublic()
   @ApiResponse({ status: 200, type: SuccessResponseDto })
-  findOne(@Query() blogSlug: string): Promise<SuccessResponseDto> {
-    return this.blogService.findBlogBySlug(blogSlug);
+  findOne(@Query() { slug }: SlugBlogQueryDto): Promise<SuccessResponseDto> {
+    return this.blogService.findBlogBySlug(slug);
   }
 
   @Put(':id')
@@ -56,9 +61,9 @@ export class BlogController {
     return this.blogService.updateBlogById(id);
   }
 
-  @Delete(':id')
+  @Delete(':blogId')
   @ApiResponse({ status: 200, type: SuccessResponseDto })
-  remove(@Body() id: string): Promise<SuccessResponseDto> {
-    return this.blogService.deleteBlogById(id);
+  remove(@Param() { blogId }: DeleteBlogDto): Promise<SuccessResponseDto> {
+    return this.blogService.deleteBlogById(blogId);
   }
 }

@@ -1,12 +1,22 @@
-import { Body, Controller, Delete, Get, Patch, Post } from '@nestjs/common';
 import { AuthUserId } from '../auth/decorator/auth-user-id.decorator';
 import { RequiredRoles } from '../user/decorator/roles.decorator';
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SuccessResponseDto } from '../common/dto/response.dto';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { IsPublic } from '../auth/guard/authentication.guard';
+import { DeleteCategoryDto } from './dto/delete-category.dto';
 import { UserRoleEnum } from '../user/enum/user-role.enum';
+import { DocIdQueryDto } from '../common/dto/doc-id.dto';
 import { CategoryService } from './category.service';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 
 @ApiTags('Category')
 @Controller('categories')
@@ -33,14 +43,20 @@ export class CategoryController {
 
   @Patch(':id')
   @RequiredRoles([UserRoleEnum.ADMIN])
-  async update(id: string): Promise<SuccessResponseDto> {
+  async update(
+    @Param() { id }: DocIdQueryDto,
+    @Body() category: any,
+  ): Promise<SuccessResponseDto> {
+    console.log(category);
     return await this.categoryService.updateCategory(id);
   }
 
-  @Delete(':id')
+  @Delete(':categoryId')
   @ApiResponse({ status: 200, type: SuccessResponseDto })
   @RequiredRoles([UserRoleEnum.ADMIN])
-  async remove(id: string): Promise<SuccessResponseDto> {
-    return await this.categoryService.deleteCategory(id);
+  async remove(
+    @Param() { categoryId }: DeleteCategoryDto,
+  ): Promise<SuccessResponseDto> {
+    return await this.categoryService.deleteCategory(categoryId);
   }
 }
