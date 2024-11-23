@@ -18,6 +18,9 @@ export class Blog {
   @Prop({ type: String, required: true, minlength: 10, maxlength: 255 })
   title: string;
 
+  @Prop({ type: String, required: true })
+  description: string;
+
   @Prop({ type: Types.ObjectId, ref: Category.name, default: null })
   category: string;
 

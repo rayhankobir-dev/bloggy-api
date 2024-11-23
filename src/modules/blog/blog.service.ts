@@ -24,6 +24,9 @@ export class BlogService {
     author: string,
   ): Promise<SuccessResponseDto> {
     try {
+      if (await this.blogRepository.getOneWhere({ slug: blogDto.slug }))
+        throw new BadRequestException('Blog already exists with this slug');
+
       const thumbnail = await this.cloudinaryService.uploadSingleImage(
         blogDto.thumbnail,
       );

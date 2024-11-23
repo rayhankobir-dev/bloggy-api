@@ -15,10 +15,10 @@ export class Category {
   @Prop({ type: String, required: true, unique: true })
   slug: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, required: false, default: null })
   thumbnail: string;
 
-  @Prop({ type: Types.ObjectId, ref: User.name, default: null })
+  @Prop({ type: Types.ObjectId, ref: User.name, required: true, default: null })
   createdBy: string;
 }
 

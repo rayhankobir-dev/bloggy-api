@@ -36,7 +36,8 @@ export const ValidationProvider = {
     new ValidationPipe({
       transform: true,
       whitelist: true,
-      transformOptions: { enableImplicitConversion: true },
+      forbidNonWhitelisted: true,
+      transformOptions: { enableImplicitConversion: false },
       exceptionFactory: (errors: ValidationError[]) => {
         const formattedErrors = exceptionFactory(errors);
         return new BadRequestException({

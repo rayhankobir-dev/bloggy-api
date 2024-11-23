@@ -27,6 +27,13 @@ export class CreateBlogDto {
   @IsString({ message: 'Title must be a string' })
   @Length(10, 255, { message: 'Title must be between 10 and 255 characters' })
   title: string;
+  @ApiProperty({
+    description: 'Short description of the blog',
+    example: 'This is a short description of my blog.',
+  })
+  @IsNotEmpty({ message: 'Description is required' })
+  @IsString({ message: 'Description must be a string' })
+  description: string;
 
   @ApiProperty({
     description: 'Category id for the blog',

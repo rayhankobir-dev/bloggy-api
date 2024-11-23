@@ -8,6 +8,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import slugify from 'slugify';
 
 @Injectable()
 export class CategoryService {
@@ -21,11 +22,20 @@ export class CategoryService {
     categoryDto: CreateCategoryDto,
     createdBy: string,
   ): Promise<SuccessResponseDto> {
+    const slug = slugify(categoryDto.name, {
+      lower: true,
+    });
+
+    if (await this.categoryRepository.getOneWhere({ slug }))
+      throw new BadRequestException('Category already exists');
+
     const thumbnail = await this.cloudinaryService.uploadSingleImage(
       categoryDto.thumbnail,
     );
+
     const category = await this.categoryRepository.create({
       ...categoryDto,
+      slug,
       thumbnail,
       createdBy,
     });

@@ -5,6 +5,7 @@ import { SuccessResponseDto } from '../common/dto/response.dto';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { IsPublic } from '../auth/guard/authentication.guard';
 import { DeleteCategoryDto } from './dto/delete-category.dto';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { UserRoleEnum } from '../user/enum/user-role.enum';
 import { DocIdQueryDto } from '../common/dto/doc-id.dto';
 import { CategoryService } from './category.service';
@@ -17,8 +18,8 @@ import {
   Patch,
   Post,
   UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
-import slugify from 'slugify';
 
 @ApiTags('Category')
 @Controller('categories')
@@ -29,15 +30,13 @@ export class CategoryController {
   @ApiBody({ type: CreateCategoryDto })
   @ApiResponse({ status: 201, type: SuccessResponseDto })
   @ApiConsumes('multipart/form-data')
-  // @RequiredRoles([UserRoleEnum.ADMIN])
+  @UseInterceptors(FilesInterceptor('thumbnail'))
   async create(
-    @Body() categoryDto: CreateCategoryDto,
-    @UploadedFiles() thumbnail: Express.Multer.File,
     @AuthUserId() { userId }: ITokenPayload,
+    @UploadedFiles() thumbnail: Express.Multer.File,
+    @Body() categoryDto: CreateCategoryDto,
   ): Promise<SuccessResponseDto> {
     categoryDto.thumbnail = thumbnail;
-    categoryDto.slug = slugify(categoryDto.name);
-
     return await this.categoryService.createCategory(categoryDto, userId);
   }
 
