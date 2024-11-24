@@ -10,6 +10,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { SuccessResponseDto } from '../common/dto/response.dto';
 import { ListUserQuery } from './dto/list-user-query.dto';
 import { PaginatedResponseDto } from '../common/dto/paginate-response.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Injectable()
 export class UserService {
@@ -17,6 +19,7 @@ export class UserService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly encryptionService: EncryptionService,
+    private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   async create(userCreateDto: CreateUserDto): Promise<SuccessResponseDto> {
@@ -81,6 +84,35 @@ export class UserService {
 
       this.logger.error('Error deleting document:', error.description);
       throw new BadRequestException('Error deleting document');
+    }
+  }
+
+  async updateProfile(
+    userId: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<SuccessResponseDto> {
+    try {
+      const { profilePicture, ...otherDetails } = updateUserDto;
+      let uploadedProfilePicture: string | undefined;
+
+      if (profilePicture) {
+        uploadedProfilePicture =
+          await this.cloudinaryService.uploadSingleImage(profilePicture);
+      }
+
+      const updatedUser = await this.userRepository.updateOneById(userId, {
+        ...otherDetails,
+        ...(uploadedProfilePicture && {
+          profilePicture: uploadedProfilePicture,
+        }),
+      });
+
+      return new SuccessResponseDto('User updated successfully', updatedUser);
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+
+      this.logger.error('Error updating profile:', error.description);
+      throw new BadRequestException('Failed to update profile');
     }
   }
 }

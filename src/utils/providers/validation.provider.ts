@@ -37,7 +37,7 @@ export const ValidationProvider = {
       transform: true,
       whitelist: true,
       forbidNonWhitelisted: true,
-      transformOptions: { enableImplicitConversion: false },
+      transformOptions: { enableImplicitConversion: true },
       exceptionFactory: (errors: ValidationError[]) => {
         const formattedErrors = exceptionFactory(errors);
         return new BadRequestException({

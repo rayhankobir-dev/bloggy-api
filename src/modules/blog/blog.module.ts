@@ -6,6 +6,7 @@ import { BlogRepository } from './blog.repository';
 import { BlogController } from './blog.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from '../user/user.module';
+import { BlogValidator } from './blog.validator';
 import { TagModule } from '../tag/tag.module';
 import { BlogService } from './blog.service';
 import { Module } from '@nestjs/common';
@@ -20,7 +21,7 @@ import { Module } from '@nestjs/common';
     CommentModule,
   ],
   controllers: [BlogController],
-  providers: [BlogService, BlogRepository],
+  providers: [BlogService, BlogRepository, BlogValidator],
   exports: [BlogRepository],
 })
 export class BlogModule {}

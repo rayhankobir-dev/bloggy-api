@@ -2,7 +2,7 @@ import { IsNotEmpty, IsString, Matches, MinLength } from 'class-validator';
 import { IsNotEqualTo } from 'src/utils/validator/is-not-equal.validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class ChangePasswordDto {
+export class ResetPasswordDto {
   @ApiProperty({
     description: "The user's old password",
   })

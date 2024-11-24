@@ -18,9 +18,6 @@ export class User {
   fullName: string;
 
   @Prop({ type: String, default: null })
-  title: string;
-
-  @Prop({ type: String, default: null })
   profilePicture: string;
 
   @Prop({ type: String, unique: true })

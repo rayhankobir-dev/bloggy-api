@@ -19,6 +19,7 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const port = parseInt(configService.get('PORT', '4000'), 10);
   configureSwaggerUI(app);
+
   await app.listen(port);
   return `${await app.getUrl()}`;
 }

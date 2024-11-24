@@ -12,11 +12,6 @@ export class CreateUserDto {
   @ApiProperty({ description: "User's full name", required: false })
   @IsOptional()
   @IsString({ message: 'Full name must be a string' })
-  username?: string;
-
-  @ApiProperty({ description: "User's full name", required: false })
-  @IsOptional()
-  @IsString({ message: 'Full name must be a string' })
   fullName?: string;
 
   @ApiProperty({ description: "User's email", example: 'user@example.com' })

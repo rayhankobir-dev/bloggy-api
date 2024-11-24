@@ -1,9 +1,12 @@
 import { PaginatedResponseDto } from '../common/dto/paginate-response.dto';
 import { SuccessResponseDto } from '../common/dto/response.dto';
+import { AuthUserId } from '../auth/decorator/auth-user-id.decorator';
+import { ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RequiredRoles } from './decorator/roles.decorator';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { ListUserQuery } from './dto/list-user-query.dto';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { DeleteUserDto } from './dto/delete-user.dto';
 import { UserRoleEnum } from './enum/user-role.enum';
 import { UserService } from './user.service';
@@ -13,8 +16,11 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Query,
+  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
 
 @ApiTags('User')
@@ -30,7 +36,7 @@ export class UserController {
 
   @Get()
   @ApiResponse({ status: 200, type: PaginatedResponseDto })
-  //   @RequiredRoles([UserRoleEnum.ADMIN])
+  @RequiredRoles([UserRoleEnum.ADMIN])
   findAll(@Query() query: ListUserQuery): Promise<PaginatedResponseDto> {
     return this.userService.findAll(query);
   }
@@ -40,5 +46,18 @@ export class UserController {
   @RequiredRoles([UserRoleEnum.ADMIN])
   deleteUser(@Param() { userId }: DeleteUserDto): Promise<SuccessResponseDto> {
     return this.userService.deleteOne(userId);
+  }
+
+  @Patch('update-profile')
+  @ApiResponse({ status: 200, type: SuccessResponseDto })
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FilesInterceptor('profilePicture'))
+  updateUser(
+    @Body() updateUserDto: UpdateUserDto,
+    @UploadedFiles() profilePicture: Express.Multer.File,
+    @AuthUserId() { userId }: ITokenPayload,
+  ): Promise<SuccessResponseDto> {
+    updateUserDto.profilePicture = profilePicture;
+    return this.userService.updateProfile(userId, updateUserDto);
   }
 }

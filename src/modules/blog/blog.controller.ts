@@ -51,7 +51,7 @@ export class BlogController {
   @Get(':slug')
   @IsPublic()
   @ApiResponse({ status: 200, type: SuccessResponseDto })
-  findOne(@Query() { slug }: SlugBlogQueryDto): Promise<SuccessResponseDto> {
+  findOne(@Param() { slug }: SlugBlogQueryDto): Promise<SuccessResponseDto> {
     return this.blogService.findBlogBySlug(slug);
   }
 

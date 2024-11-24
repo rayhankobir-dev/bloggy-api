@@ -4,6 +4,7 @@ import { SuccessResponseDto } from '../common/dto/response.dto';
 import { ListBlogQuery } from './dto/list-blog-query.dto';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { BlogRepository } from './blog.repository';
+import { BlogValidator } from './blog.validator';
 import {
   BadRequestException,
   HttpException,
@@ -15,6 +16,7 @@ import {
 export class BlogService {
   private readonly logger: Logger = new Logger(BlogService.name);
   constructor(
+    private readonly blogValidator: BlogValidator,
     private readonly blogRepository: BlogRepository,
     private readonly cloudinaryService: CloudinaryService,
   ) {}
@@ -24,6 +26,8 @@ export class BlogService {
     author: string,
   ): Promise<SuccessResponseDto> {
     try {
+      await this.blogValidator.validateCategory(blogDto);
+
       if (await this.blogRepository.getOneWhere({ slug: blogDto.slug }))
         throw new BadRequestException('Blog already exists with this slug');
 
