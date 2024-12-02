@@ -1,6 +1,7 @@
 import { EncryptionService } from '../encryption/encryption.service';
 import {
   BadRequestException,
+  ConflictException,
   HttpException,
   Injectable,
   Logger,
@@ -27,6 +28,15 @@ export class UserService {
       userCreateDto['password'] = await this.encryptionService.hashPassword(
         userCreateDto.password,
       );
+
+      const isUserExist = await this.userRepository.getOneWhere({
+        email: userCreateDto.email,
+      });
+
+      if (isUserExist) {
+        this.logger.error('User already exists: ', userCreateDto.email);
+        throw new ConflictException('Email already in use!');
+      }
 
       const user = await this.userRepository.create(userCreateDto);
 

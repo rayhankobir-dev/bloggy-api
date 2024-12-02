@@ -24,7 +24,6 @@ export class TagController {
   @Post()
   @ApiProperty({ type: CreateTagDto })
   @ApiResponse({ status: 201, type: SuccessResponseDto })
-  @RequiredRoles([UserRoleEnum.ADMIN])
   create(
     @Body() createTagDto: CreateTagDto,
     @AuthUserId() { userId }: ITokenPayload,

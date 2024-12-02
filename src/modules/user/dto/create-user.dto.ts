@@ -28,7 +28,9 @@ export class CreateUserDto {
     description: "User's role",
     enum: UserRoleDtoEnum,
     example: UserRoleDtoEnum.AUTHOR,
+    default: UserRoleDtoEnum.AUTHOR,
   })
+  @IsOptional()
   @IsEnum(UserRoleDtoEnum, { message: 'Invalid user role' })
   role: UserRoleDtoEnum;
 }

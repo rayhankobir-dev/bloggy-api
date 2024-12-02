@@ -20,7 +20,7 @@ export class User {
   @Prop({ type: String, default: null })
   profilePicture: string;
 
-  @Prop({ type: String, unique: true })
+  @Prop({ type: String, unique: true, required: true })
   email: string;
 
   @Prop({ type: Boolean, default: false })

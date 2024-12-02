@@ -4,11 +4,12 @@ import { SuccessResponseDto } from '../common/dto/response.dto';
 import { TokenResponseDto } from './dto/token-response.dto';
 import { UserDocument } from '../user/entities/user.entity';
 import { UserRepository } from '../user/user.repository';
-import { SignUpDto } from './dto/register.dto';
+import { SignUpDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import {
   BadRequestException,
+  ConflictException,
   HttpException,
   Injectable,
   InternalServerErrorException,
@@ -17,6 +18,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { UserRoleEnum } from '../user/enum/user-role.enum';
 
 @Injectable()
 export class AuthService {
@@ -28,13 +30,25 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async register(signUpDto: SignUpDto): Promise<SuccessResponseDto> {
+  async signup(signUpDto: SignUpDto): Promise<SuccessResponseDto> {
     try {
       signUpDto.password = await this.encryptionService.hashPassword(
         signUpDto.password,
       );
 
-      const user = await this.userRepository.create(signUpDto);
+      const isUserExist = await this.userRepository.getOneWhere({
+        email: signUpDto.email,
+      });
+
+      if (isUserExist) {
+        this.logger.error('User already exists: ', signUpDto.email);
+        throw new ConflictException('Email already in use!');
+      }
+
+      const user = await this.userRepository.create({
+        ...signUpDto,
+        role: UserRoleEnum.AUTHOR,
+      });
       const accessToken = await this.generateAccessToken(
         user.id.toString(),
         user.role,

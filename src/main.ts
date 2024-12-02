@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger } from '@nestjs/common';
+import { HelmetConfig } from './config/helmet.config';
 
 const logger = new Logger('Blog API');
 
@@ -16,6 +17,7 @@ async function bootstrap() {
   app.enableCors({
     origin: true,
   });
+  app.use(HelmetConfig.getOptions());
   const configService = app.get(ConfigService);
   const port = parseInt(configService.get('PORT', '4000'), 10);
   configureSwaggerUI(app);

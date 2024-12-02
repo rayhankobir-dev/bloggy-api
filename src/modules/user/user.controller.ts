@@ -22,6 +22,7 @@ import {
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
+import { IsPublic } from '../auth/guard/authentication.guard';
 
 @ApiTags('User')
 @Controller('users')
@@ -36,7 +37,7 @@ export class UserController {
 
   @Get()
   @ApiResponse({ status: 200, type: PaginatedResponseDto })
-  @RequiredRoles([UserRoleEnum.ADMIN])
+  @IsPublic()
   findAll(@Query() query: ListUserQuery): Promise<PaginatedResponseDto> {
     return this.userService.findAll(query);
   }

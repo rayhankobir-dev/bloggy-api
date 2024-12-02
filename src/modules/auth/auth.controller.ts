@@ -2,7 +2,7 @@ import { Body, Controller, Get, HttpCode, Post } from '@nestjs/common';
 import { SuccessResponseDto } from '../common/dto/response.dto';
 import { IsPublic } from './guard/authentication.guard';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { SignUpDto } from './dto/register.dto';
+import { SignUpDto } from './dto/signup.dto';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
@@ -14,7 +14,7 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('register')
+  @Post('signup')
   @HttpCode(201)
   @IsPublic()
   @ApiResponse({
@@ -22,7 +22,7 @@ export class AuthController {
     type: SuccessResponseDto,
   })
   register(@Body() signUpDto: SignUpDto) {
-    return this.authService.register(signUpDto);
+    return this.authService.signup(signUpDto);
   }
 
   @Post('login')
